@@ -18,7 +18,7 @@ namespace Historical_Gatherer
         {
             InitializeComponent();
         }
-        string path, pathF, pathTL, temp, trickname;
+        string path, pathTL, temp, trickname, lasttrick;
         List<string> trick = new List<string>();
         List<string> rotatsion = new List<string>();
         List<string> start = new List<string>();
@@ -30,8 +30,7 @@ namespace Historical_Gatherer
         private void btnSelect_Click(object sender, EventArgs e)
         {
             openbrowser();
-            pathF = path;
-            lblPath.Text = pathF;
+            lblPath.Text = path;
             btnGenFlip.Enabled = true;
         }
         private void btnSelectTrickLine_Click(object sender, EventArgs e)
@@ -53,7 +52,7 @@ namespace Historical_Gatherer
             }
         }
 
-        string lasttrick;
+        
 
         private void FormatTrick()
         {
@@ -94,7 +93,7 @@ namespace Historical_Gatherer
         {
             try
             {
-                foreach (var line in File.ReadAllLines(pathF))
+                foreach (var line in File.ReadAllLines(path))
                 {
                     if (line.Contains("\"trickName\":"))
                     {
@@ -168,24 +167,23 @@ namespace Historical_Gatherer
         }
         private void write()
         {
-            string newpath = pathF.Substring(0, pathF.Length - 4) + " New.txt";
+            DateTime time = new DateTime();
+            time = DateTime.Now;
+            string newpath = path.Substring(0, path.Length - 4) + "new.txt";
 
             if (!File.Exists(newpath))
             {
                 // Create a file to write to.
                 using (StreamWriter sw = File.CreateText(newpath))
                 {
-
-                    MessageBox.Show(trick.Count.ToString());
                     // Loop over trick and rotation and write with
                     for (int i = 0; i < trick.Count(); i++)
                     {
-                        temp = "Trick - " + trick[i] + "Rotation - " + rotatsion[i] + "    Location - " + start[i] + "  -  " + end[i];
+                        temp = "Trick - " + trick[i] + "    Rotation - " + rotatsion[i] + "    Location - " + start[i] + "  -  " + end[i];
                         sw.WriteLine(temp);
                     }
                     for (int i = 0; i < grind.Count(); i++)
                     {
-                        MessageBox.Show(grind.Count.ToString()); ;
                         temp = "Trick - " + grind[i] + "    Location - " + start[i] + "  -  " + end[i];
                         sw.WriteLine(temp);
                     }
