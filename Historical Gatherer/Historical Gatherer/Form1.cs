@@ -18,16 +18,14 @@ namespace Historical_Gatherer
         {
             InitializeComponent();
         }
-        string path, pathF, pathG, pathTL, temp, trickname;
+        string path, pathF, pathTL, temp, trickname;
         List<string> trick = new List<string>();
         List<string> rotatsion = new List<string>();
         List<string> start = new List<string>();
         List<string> end = new List<string>();
-
         List<string> grind = new List<string>();
-        List<string> gstart = new List<string>();
-        List<string> gend = new List<string>();
-        
+        List<string> grindStart = new List<string>();
+        List<string> grindEnd = new List<string>();
         //Select Buttons
         private void btnSelect_Click(object sender, EventArgs e)
         {
@@ -36,19 +34,10 @@ namespace Historical_Gatherer
             lblPath.Text = pathF;
             btnGenFlip.Enabled = true;
         }
-        private void btnSelectGrindList_Click(object sender, EventArgs e)
-        {
-            openbrowser();
-            pathG = path;
-            lblPathGrind.Text = pathG;
-            btnGenGrind.Enabled = true;
-        }
         private void btnSelectTrickLine_Click(object sender, EventArgs e)
         {
             openbrowser();
             pathTL = path;
-            lblPathTrickLine.Text = pathTL;
-            btnGenTrickLine.Enabled = true;
         }
         private void openbrowser()
         {
@@ -63,95 +52,122 @@ namespace Historical_Gatherer
                 path = selectedFileName;
             }
         }
-        
-        
-        //Short Cut Buttons
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            pathF = "C:\\Users\\Cal\\Desktop\\Historical Flips.txt";
-            lblPath.Text = pathF;
-            btnGenFlip.Enabled = true;
-        }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            pathG = "C:\\Users\\Cal\\Desktop\\Historical Grinds.txt";
-            lblPathGrind.Text = pathG;
-            btnGenGrind.Enabled = true;
-        }
-        private void button3_Click(object sender, EventArgs e)
-        {
-            pathTL = "C:\\Users\\Cal\\Desktop\\Historical Trickline.txt";
-            lblPathTrickLine.Text = pathTL;
-            btnGenGrind.Enabled = true;
-        }
 
+        string lasttrick;
 
-
+        private void FormatTrick()
+        {
+            temp = temp.Remove(0, 15);
+            temp = temp.Substring(0, temp.Length - 2);
+            temp = temp.Replace("_", " ");
+        }
+        private void CheckStance()
+        {
+            switch (temp)
+            {
+                case "RGS":
+                    temp = "Regular";
+                    trickname = trickname.Remove(0, 3);
+                    trickname = temp + trickname;
+                    break;
+                case "SWS":
+                    temp = "Switch";
+                    trickname = trickname.Remove(0, 3);
+                    trickname = temp + trickname;
+                    break;
+                case "NLS":
+                    temp = "Nollie";
+                    trickname = trickname.Remove(0, 3);
+                    trickname = temp + trickname;
+                    break;
+                case "FKS":
+                    temp = "Fakie";
+                    trickname = trickname.Remove(0, 3);
+                    trickname = temp + trickname;
+                    break;
+                default:
+                    break;
+            }
+        }
         //Generate List Buttons
         private void btnGen_Click(object sender, EventArgs e)
         {
-            foreach (var line in File.ReadAllLines(pathF))
+            try
             {
-                if (line.Contains("\"trickName\":"))
+                foreach (var line in File.ReadAllLines(pathF))
                 {
-                    temp = line;
-                    temp = temp.Remove(0, 15);
-                    temp = temp.Substring(0, temp.Length - 2);
-                    temp = temp.Replace("_", " ");
-
-                    trickname = temp;
-                    temp = trickname.Substring(0, 3);
-                    switch (temp)
+                    if (line.Contains("\"trickName\":"))
                     {
-                        case "RGS":
-                            temp = "Regular";
-                            trickname = trickname.Remove(0, 3);
-                            trickname = temp + trickname;
-                            break;
-                        case "SWS":
-                            temp = "Switch";
-                            trickname = trickname.Remove(0, 3);
-                            trickname = temp + trickname;
-                            break;
-                        case "NLS":
-                            temp = "Nollie";
-                            trickname = trickname.Remove(0, 3);
-                            trickname = temp + trickname;
-                            break;
-                        case "FKS":
-                            temp = "Fakie";
-                            trickname = trickname.Remove(0, 3);
-                            trickname = temp + trickname;
-                            break;
-                        default:
-                            break;
+                        lasttrick = "flip";
+                        temp = line;
+                        FormatTrick();
+                        trickname = temp;
+                        temp = trickname.Substring(0, 3);
+                        CheckStance();
+
+                        trick.Add(trickname);
                     }
-                    trick.Add(trickname);
-                }
-                if (line.Contains("\"trickRotation\":"))
-                {
-                    temp = line;
-                    temp = temp.Remove(0, 19);
-                    temp = temp.Substring(0, temp.Length - 2);
-                    temp = temp.Replace("ELTRT_", "");
-                    rotatsion.Add(temp);
-                }
-                if (line.Contains("\"startLocationName\":"))
-                {
-                    temp = line;
-                    temp = temp.Remove(0, 25);
-                    temp = temp.Substring(0, temp.Length - 2);
-                    start.Add(temp);
-                }
-                if (line.Contains("\"endLocationName\":"))
-                {
-                    temp = line;
-                    temp = temp.Remove(0, 23);
-                    temp = temp.Substring(0, temp.Length - 1);
-                    end.Add(temp);
+                    if (line.Contains("\"grindName\":"))
+                    {
+                        lasttrick = "grind";
+                        temp = line;
+                        FormatTrick();
+                        trickname = temp;
+                        grind.Add(trickname);
+                    }
+                    if (line.Contains("\"trickRotation\":"))
+                    {
+                        temp = line;
+                        temp = temp.Remove(0, 19);
+                        temp = temp.Substring(0, temp.Length - 2);
+                        temp = temp.Replace("ELTRT_", "");
+                        rotatsion.Add(temp);
+                    }
+                    if (line.Contains("\"startLocationName\":"))
+                    {
+                        if (lasttrick == "flip")
+                        {
+                            temp = line;
+                            temp = temp.Remove(0, 25);
+                            temp = temp.Substring(0, temp.Length - 2);
+                            start.Add(temp);
+                        }
+                        if (lasttrick == "grind")
+                        {
+                            temp = line;
+                            temp = temp.Remove(0, 25);
+                            temp = temp.Substring(0, temp.Length - 2);
+                            grindStart.Add(temp);
+                        }
+                    }
+                    if (line.Contains("\"endLocationName\":"))
+                    {
+                        if (lasttrick == "flip")
+                        {
+                            temp = line;
+                            temp = temp.Remove(0, 23);
+                            temp = temp.Substring(0, temp.Length - 1);
+                            end.Add(temp);
+                        }
+                        if (lasttrick == "grind")
+                        {
+                            temp = line;
+                            temp = temp.Remove(0, 23);
+                            temp = temp.Substring(0, temp.Length - 1);
+                            grindEnd.Add(temp);
+                        }
+
+                    }
                 }
             }
-
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            write();
+        }
+        private void write()
+        {
             string newpath = pathF.Substring(0, pathF.Length - 4) + " New.txt";
 
             if (!File.Exists(newpath))
@@ -159,68 +175,25 @@ namespace Historical_Gatherer
                 // Create a file to write to.
                 using (StreamWriter sw = File.CreateText(newpath))
                 {
+
+                    MessageBox.Show(trick.Count.ToString());
                     // Loop over trick and rotation and write with
                     for (int i = 0; i < trick.Count(); i++)
                     {
-                        temp = "Trick - " + trick[i] + " Rotation - " + rotatsion[i] + "    Location - " + start[i] + "  -  " + end[i];
+                        temp = "Trick - " + trick[i] + "Rotation - " + rotatsion[i] + "    Location - " + start[i] + "  -  " + end[i];
                         sw.WriteLine(temp);
                     }
-
-                    MessageBox.Show("Fliptrick Historical list complete");
-                }
-
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            foreach (var line in File.ReadAllLines(pathG))
-            {
-                if (line.Contains("\"grindName\":"))
-                {
-                    temp = line;
-                    temp = temp.Remove(0, 14);
-                    temp = temp.Substring(0, temp.Length - 2);
-                    temp = temp.Replace("_", " ");
-
-                    string grindname = temp;
-                    temp = grindname.Substring(0, 3);
-                    grind.Add(grindname);
-                }
-                if (line.Contains("\"startLocationName\":"))
-                {
-                    temp = line;
-                    temp = temp.Remove(0, 25);
-                    temp = temp.Substring(0, temp.Length - 2);
-                    gstart.Add(temp);
-                }
-                if (line.Contains("\"endLocationName\":"))
-                {
-                    temp = line;
-                    temp = temp.Remove(0, 23);
-                    temp = temp.Substring(0, temp.Length - 2);
-                    gend.Add(temp);
-                }
-            }
-            string newpath = pathG.Substring(0, pathG.Length - 4) + " New.txt";
-
-            if (!File.Exists(newpath))
-            {
-                // Create a file to write to.
-                using (StreamWriter sw = File.CreateText(newpath))
-                {
-                    // Loop over trick and rotation and write with
-                    for (int iii = 0; iii < grind.Count(); iii++)
+                    for (int i = 0; i < grind.Count(); i++)
                     {
-                        temp = "Grind - " + grind[iii] + "    Location - " + gstart[iii] + "   -   " + gend[iii];
+                        MessageBox.Show(grind.Count.ToString()); ;
+                        temp = "Trick - " + grind[i] + "    Location - " + start[i] + "  -  " + end[i];
                         sw.WriteLine(temp);
                     }
 
-                    MessageBox.Show("Grind Historical list complete");
+                    MessageBox.Show("Historical list complete");
                 }
 
             }
-
         }
     }
 }
